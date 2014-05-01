@@ -220,7 +220,12 @@ class Page
   
   def self.root
     p = Page.create('(root)')
-    add_children p, MockData.data_for(:navigation) 
+    nav_data = MockData.data_for(:navigation)
+    if nav_data
+      add_children p, nav_data
+    else
+      add_children p, children
+    end
     p
   end  
   
