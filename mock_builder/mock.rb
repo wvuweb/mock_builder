@@ -240,15 +240,25 @@ class Space
   end
   
   def self.current_space
-    self.new
+    self.new({:name => get_name, :id => 1})
   end
   
   def self.find(arg)
-    self.new
+    self.new({:name => self.get_name, :id => 1})
   end
   
   def domain
     "http://localhost:2000"
+  end
+  
+  def self.get_name
+    name = MockData.data_for(:site_name)
+    
+    if name == nil
+      name = "Site Name"
+    end
+    
+    name
   end
   
 end
