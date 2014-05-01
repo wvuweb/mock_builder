@@ -167,10 +167,6 @@ class Page
     @@singleton ||= self.new
   end
   
-  def depth
-    0
-  end
-  
   def self.find(arg)
     @@singleton ||= self.new
   end
