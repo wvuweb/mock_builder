@@ -227,9 +227,17 @@ end
 
 class Space
   attr_accessor :name, :url, :theme, :domain, :id
-    
+  
+  def initialize(options={})
+    options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
+  end
+  
   def self.current_space
+    puts YAML.dump(@@singleton)
+    puts YAML.dump(self.new)
+    
     @@singleton ||= self.new
+    
   end
   
   def self.find(arg)
@@ -314,6 +322,9 @@ module PagebuilderHelper
   def is_mobile_version?
   end
   
+  def mobile_ga
+  end
+  
   def google_analytics
     ga_data = MockData.data_for('google_analytics')
     if ga_data
@@ -346,6 +357,10 @@ module PagebuilderHelper
       EOF
       
     end
+  end
+  
+  def current_space
+    Space.new({:name => site_name, :id => 1})
   end
   
   def share_this(site_name, space)
