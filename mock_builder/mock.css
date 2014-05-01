@@ -1,0 +1,112 @@
+#exception { width: 100%; background: #fff;}
+
+#mock_toolbar {
+	position: absolute;
+	background: darkorange;
+	color: #fff;
+	right: 0;
+	top: 0;
+	width: 200px;
+	height: auto;
+	border: solid 2px #fff;
+	padding: 5px;
+	font: normal 12px Verdana;
+	z-index: 9000;
+}
+
+#mock_toolbar a {
+	font-weight: normal;
+	color: #fff;
+	text-decoration: none;
+	padding: 3px;
+	background: none;
+}
+
+#mock_toolbar a#toggler {
+	float: right;
+}
+
+#mock_toolbar li {
+	padding: 3px 0;
+}
+
+
+#mock_toolbar ul {
+	list-style: square;
+	padding: 0 0 0 0.5em;
+	margin: 0 0 0 1em;
+}
+
+#mock_toolbar a:hover {
+	background: brown;
+}
+
+#mock_toolbar input {
+	border: solid 2px yellow;
+	padding: 2px;
+	margin: 2px;
+}
+
+#mock_toolbar input.submit {
+	background: yellow;
+	font-weight: bold;
+}
+
+span.partial_error {
+	background: red;
+	color: #fff;
+	padding: 3px;
+	display: block;
+	font: normal 12px Verdana;
+}
+
+span.partial_error a {
+	color: yellow;
+}
+
+#exception {
+  font: normal 1em Arial;
+  margin-right: 250px;
+}
+
+#exception pre {
+
+}
+
+#exception pre strong {
+	background: #ccc;
+	color: #000;
+	padding-right: 2em;
+	font-weight: normal;
+}
+
+#exception table {
+	width: 100%;
+  xborder: solid 1px #ccc;
+  border-collapse: collapse;	
+}
+
+#exception td {
+  background: #eee;
+  color: #444;
+	white-space:	pre;
+	font: normal 0.8em Monaco, monospace;
+	padding: 0 15px;
+}
+
+#exception td.n {
+	width: 3em;
+	background: #333;
+	color: #777;
+	padding: 1px 5px;
+	text-align: right;
+}
+
+#exception td.error {
+	background: #c66;
+	color: #fff;
+}
+
+#exception td.n.error {
+	background: #500;
+}

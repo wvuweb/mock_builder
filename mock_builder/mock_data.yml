@@ -1,0 +1,13 @@
+navigation:
+  - About
+  - Contact
+  -
+    - Director
+    - Staff
+    -
+      - Scharf, Chris
+  - Services
+  
+content_1: |
+  This is some sample content which has no real purpose.  
+  It's only here for fun, okay?      
