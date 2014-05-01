@@ -487,7 +487,22 @@ module PagebuilderHelper
   alias :support_toolbar :admin_toolbar
   
   def site_menu
-    Page.root.direct_children
+    nav_data = MockData.data_for('navigation')
+
+    if nav_data && nav_data.kind_of?(Array)
+      pages = []
+      depth = 0
+      
+      ## Does not handle multi level menus
+      nav_data.each do |page|
+        unless page.kind_of?(Array)
+          pages << Page.new({:name => page, :depth => depth})
+        end
+      end
+      pages
+    else
+      Page.root.direct_children
+    end
   end
   
   def current_page?(p); p.name == current_page; end
