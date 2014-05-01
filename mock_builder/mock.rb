@@ -136,7 +136,9 @@ class Page
   @url = nil
   @path = '/0/1/'
 
-  def initialize
+  def initialize(options={})
+    options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
+
     @direct_children = []
     @children = []
     @siblings = []
