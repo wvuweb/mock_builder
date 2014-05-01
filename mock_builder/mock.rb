@@ -233,15 +233,11 @@ class Space
   end
   
   def self.current_space
-    puts YAML.dump(@@singleton)
-    puts YAML.dump(self.new)
-    
-    @@singleton ||= self.new
-    
+    self.new
   end
   
   def self.find(arg)
-    @@singleton ||= self.new
+    self.new
   end
   
   def domain
