@@ -92,9 +92,13 @@ class MockData
   
   def self.data_for(key)
     load if @@data.nil?
-    data = @@data[key.to_s]
-    if data == :style_guide
-      data = File.read('style_guide.html')
+    unless @@data == false
+      data = @@data[key.to_s]
+      if data == :style_guide
+        data = File.read('style_guide.html')
+      end
+    else
+      data = false
     end
     data
   end
