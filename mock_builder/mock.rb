@@ -1,5 +1,4 @@
 # $LOAD_PATH << '.'
-
 require 'rubygems'
 require "bundler/setup"
 
@@ -16,376 +15,17 @@ require 'chronic'
 require 'nokogiri'
 require 'sanitize'
 
-class ListMaker
-  def initialize(hash)
-    @hash = hash
-    @indent = "  "
-    @level = 0
-    @out = []
-  end
+require 'lib/list_maker.rb'
+require 'lib/mock_data.rb'
+require 'lib/lorem_ipsum.rb'
 
-  def append(tag,value=nil)
-    str = @indent * @level + "#{tag}"
-    str += @tag_space + value.to_s unless value.nil?
-    str += "\n"
-    @out << str
-  end
+require 'models/blog_article.rb'
+require 'models/blog.rb'
+require 'models/page.rb'
+require 'models/space.rb'
+require 'models/user.rb'
+require 'models/wvutoday.rb'
 
-  def ul(hash)
-    open_tag('ul') { li(hash) }
-  end
-
-  def li(hash)
-    @level += 1
-    hash.each do |key,value|
-      open_tag('li',key) { ul(value) if value.is_a?(Hash) }
-    end
-    @level -= 1
-  end
-
-  def list
-    ul(@hash)
-    @out.join
-  end
-end
-
-class HtmlListMaker < ListMaker
-  def initialize(hash)
-    super
-    @tag_space = ""
-  end
-
-  def open_tag(tag,value=nil,&block)
-    append("<#{tag}>",value)
-    yield if block_given?
-    append("</#{tag}>")
-  end
-end
-
-class HamlListMaker < ListMaker
-  def initialize(hash)
-    super
-    @tag_space = " "
-  end
-
-  def open_tag(tag,value=nil,&block)
-    append("%#{tag}",value)
-    yield if block_given?
-  end
-
-end
-
-
-class MockData
-  @@data = nil
-  def self.load(theme_name='')
-    basename = 'mock_data.yml'
-    yml = File.join(theme_name, basename)
-    yml = basename unless File.exists?(yml)
-    
-    file = File.open(yml)
-    erb = ERB.new(file.read, nil, '-')
-    file.close
-    yml_data = erb.result(binding)
-    @@data = YAML::load(yml_data)
-  end
-  
-  def self.data_for(key)
-    load if @@data.nil?
-    unless @@data == false
-      data = @@data[key.to_s]
-      if data == :style_guide
-        data = File.read('style_guide.html')
-      end
-    else
-      data = false
-    end
-    data
-  end
-end
-
-class LoremIpsum
-  def self.generate(paragraphs = 2)
-  @@lipsum ||= <<-DUMMYTEXT.split("\n").map { |e| "<p>#{e.strip}</p>" }
-    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam mollis, lectus vitae pharetra eleifend, augue risus suscipit felis, ac dapibus mi enim non sapien. Proin malesuada consequat orci. Nam tellus. Vestibulum fringilla justo quis justo. Fusce ac quam in lorem viverra sodales. Integer varius vestibulum magna. Pellentesque at ligula. Phasellus orci sapien, consectetuer in, tempus eu, condimentum vitae, nisl. Nulla tincidunt. Praesent dolor. Phasellus feugiat. Aenean est. Nullam varius.
-    Curabitur odio risus, aliquet nec, elementum rhoncus, porta ac, mauris. In vitae odio vitae dui eleifend suscipit. Sed ac nisl. Pellentesque molestie elit id pede. Duis massa orci, congue vitae, porta ac, convallis vel, sem. Etiam quis dolor eu massa vestibulum accumsan. Integer leo. Nunc euismod tortor in quam. Sed elementum. Proin odio tortor, convallis molestie, ullamcorper in, tincidunt at, metus. Aliquam faucibus pulvinar turpis. Donec diam quam, rutrum quis, tristique ultrices, facilisis et, mauris. Pellentesque neque nibh, luctus vitae, ultrices nec, semper volutpat, erat. Maecenas pharetra leo ac leo. Sed luctus nonummy eros.
-    Proin felis enim, feugiat ac, ultrices sit amet, consectetuer a, enim. Proin mollis nisl vitae metus. Fusce massa elit, ultrices vel, ornare et, cursus eu, lorem. Nulla sem nulla, ultrices non, venenatis id, vestibulum ac, augue. Phasellus tristique. Praesent feugiat luctus turpis. Nulla vitae leo nec nulla sodales tempor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur ut orci. Nulla facilisi. Cras rhoncus erat vel felis. Donec dignissim ligula a dolor. Donec lectus.
-    Nulla feugiat dignissim neque. Suspendisse et felis. Etiam mollis orci sit amet tortor. Vivamus nisl nunc, ornare sed, dictum vitae, bibendum fermentum, urna. Vestibulum accumsan, magna at interdum tempus, tellus mauris pellentesque dolor, eget mattis ligula sem laoreet libero. Aliquam vehicula, eros ut interdum varius, lectus ligula fringilla tortor, sit amet viverra felis nulla ut orci. Donec porta, neque in semper convallis, magna purus pharetra lorem, id porttitor orci metus vitae nunc. Mauris id leo. Aliquam tortor odio, faucibus eu, porta sollicitudin, lacinia ut, risus. Aliquam tincidunt nibh sit amet eros. Duis placerat felis vel odio. Nunc nisi massa, tempus porttitor, ornare vel, pellentesque blandit, enim. Aliquam a massa. Duis purus libero, cursus a, dapibus a, mollis ac, tellus. Suspendisse potenti. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris eu libero ac lectus congue ornare. Duis posuere condimentum leo. Sed elit odio, pharetra vel, dictum a, hendrerit in, ante. Quisque vulputate, justo nec semper imperdiet, dolor nibh blandit erat, id facilisis nulla diam nec dui.
-    Curabitur fringilla laoreet augue. Nulla nisi. Nullam dapibus ligula. Suspendisse potenti. Vestibulum sem. Donec fermentum, sem a mattis volutpat, quam elit congue nisi, eget tincidunt diam felis sed arcu. Sed at nulla ut tortor varius mattis. Donec rutrum. Morbi rhoncus, lectus eu venenatis feugiat, lorem lorem dictum purus, ac laoreet enim dui at nunc. Proin gravida enim eu odio. Pellentesque non velit. Curabitur et sem. Integer interdum dictum justo. Maecenas auctor lacinia arcu.
-    Pellentesque arcu ligula, posuere non, accumsan et, scelerisque et, enim. Nullam sit amet dui. Sed nec nisi sed libero congue mattis. Morbi eget ipsum ut dolor elementum vehicula. Morbi mattis, elit id interdum tristique, dolor ipsum pharetra elit, in aliquet lorem est in magna. Nunc nisi metus, vestibulum vitae, lacinia non, semper a, velit. Nullam id lectus. Maecenas consectetuer. Nam vitae lacus eu libero tempor scelerisque. Aliquam convallis gravida turpis. Proin adipiscing nonummy elit.
-    Quisque luctus. Nulla eros. Aenean lectus dui, consectetuer ut, semper ut, adipiscing cursus, velit. Donec imperdiet, urna id egestas lobortis, turpis lacus tristique justo, nec consectetuer purus augue in velit. Curabitur ante ligula, dapibus quis, ultrices et, dapibus nec, pede. Mauris eget massa non leo suscipit posuere. Duis sit amet augue. Suspendisse feugiat. In lacinia blandit velit. Integer arcu metus, commodo in, molestie sed, feugiat vitae, nibh. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In venenatis turpis vel magna. Phasellus iaculis nibh. Nullam auctor sollicitudin felis. Mauris eu tellus. Curabitur tristique urna sed purus. Donec gravida laoreet lorem.
-    Vestibulum adipiscing, est at lacinia ultrices, diam enim pulvinar sapien, sit amet facilisis leo orci a lorem. Mauris eget diam eget lectus condimentum consequat. In rhoncus nulla. Nulla tempus tellus ut lacus. Ut malesuada lobortis diam. Etiam ut tortor. Nam mollis, est quis elementum elementum, pede neque consequat mauris, aliquet congue dui nulla sit amet nibh. Vestibulum sed nulla. Nulla risus mauris, porta in, laoreet a, molestie vestibulum, mi. Praesent id sapien. Aenean viverra hendrerit ligula.
-    Sed lacinia. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed ligula orci, interdum nec, pretium a, elementum vitae, elit. Nunc pharetra. Phasellus tincidunt. Donec orci. Vivamus porttitor accumsan tortor. Etiam ultrices, augue eu porttitor eleifend, ipsum orci malesuada neque, non mattis est sapien quis elit. Etiam sollicitudin porta tellus. Nulla in risus. Donec accumsan. Nulla tempor metus at neque. Sed faucibus fermentum lectus. Fusce tellus. Sed elit.
-    Suspendisse non nibh. Aliquam ultricies ante vel lectus lacinia pretium. Proin id magna in lorem fringilla semper. Vestibulum in enim id massa volutpat gravida. Donec pharetra. Duis a quam. Proin ipsum. Etiam auctor, odio in euismod laoreet, tortor nibh aliquet ante, et dictum sapien nulla commodo nisi. Nullam imperdiet venenatis diam. Donec cursus diam ac ligula. Aliquam et sem.
-  DUMMYTEXT
-  
-  (@@count ||= 0)
-  @@count += 1
-  srand 250 * @@count
-  start = rand(@@lipsum.length - paragraphs)
-  
-  @@lipsum[start..start + paragraphs-1].join("\n  ")   
-  end
-end
-
-class Page
-  attr_accessor :direct_children, :siblings, :parent, :children
-  attr_accessor :name, :path, :url, :full_url, :created_on, :id, :template, :hidden, :depth
-
-  @@page_id = 1
-  @url = nil
-  @path = '/0/1/'
-
-  def initialize(options={})
-    options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
-
-    @direct_children = []
-    @children = []
-    @siblings = []
-    @parent = []
-  end
-  
-  def siblings(include_self, order=false)
-    @siblings = []
-  end
-  
-  def direct_children(arg=false)
-    Page.children
-  end
-  
-  def self.children
-    #@@singleton ||= self.new
-    array = []
-    array << @@singleton ||= self.new
-    array << @@singleton ||= self.new
-    array << @@singleton ||= self.new
-    array << @@singleton ||= self.new
-    array << @@singleton ||= self.new
-  end
-  
-  def parent
-    @@singleton ||= self.new
-  end
-  
-  def self.find(arg)
-    @@singleton ||= self.new
-  end
-  
-  def hidden?
-    false
-  end
-  
-  def last_modified; @created_on; end
-  
-  def self.create(name, options=nil)
-    p = self.new({:name => name, :id => @@page_id, :created_on => Time.now, :path => '/0/1/'})
-    # p.name = name
-    # p.id = @@page_id 
-    # p.created_on = Time.now
-    # #p.url =  #name.downcase.gsub(/[^0-9a-z_]/, '_').squeeze('_')
-    # p.path = '/0/1/'
-    @@page_id += 1
-    yield p if block_given?
-    p
-  end
-  
-  def full_url
-    "http://localhost:2000"+ url
-  end
-  
-  def url
-    if name.kind_of?(Page)
-      @url || name.name.downcase.gsub(/[^0-9a-z_]/, '_').squeeze('_')
-    else
-      @url || name.downcase.gsub(/[^0-9a-z_]/, '_').squeeze('_')
-    end
-  end
-  
-  def path_with_id; [path, id].join('/'); end
-  
-  def add_child(name, options=nil, &block)
-    p = self.class.create(name, options, &block)
-    p.full_url = File.join(url, p.url)
-    p.path = File.join(path, p.id.to_s + '/')
-    @direct_children << p
-    p
-  end
-
-  def self.add_children(parent, branch)
-    c = parent
-    branch.each do |b|
-      unless Array === b
-        c = parent.add_child(b) 
-      else
-        add_children(c, b) 
-      end  
-    end  
-  end
-  
-  def self.root
-    p = Page.create('(root)')
-    nav_data = MockData.data_for(:navigation)
-    if nav_data
-      add_children p, nav_data
-    else
-      add_children p, children
-    end
-    p
-  end  
-  
-  def self.current_page; @@singleton ||= self.create('Home'); end
-end
-
-class Space
-  attr_accessor :name, :url, :theme, :domain, :id, :default_page
-  
-  def initialize(options={})
-    options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
-    @default_page = Page.create("Home")
-  end
-  
-  def self.current_space
-    self.new({:name => get_name, :id => 1})
-  end
-  
-  def self.find(arg)
-    self.new({:name => self.get_name, :id => 1})
-  end
-  
-  def domain
-    "http://localhost:2000"
-  end
-  
-  def self.get_name
-    name = MockData.data_for(:site_name)
-    
-    if name == nil
-      name = "Site Name"
-    end
-    
-    name
-  end
-  
-end
-
-# WVUToday only
-class MetaData
-  
-  attr_accessor :name, :id
-  
-  def initialize(options={})
-    options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
-  end
-  
-  def self.find(arg=false, arg2=false)
-    empty_array = []
-  end
-  
-  def find(arg=false, arg2=false)
-    MetaData.new({:name => "Meta Data", :id => 1})
-  end
-end
-
-class Category
-  
-  attr_accessor :name, :id
-  
-  def initialize(options={})
-    options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
-  end
-  
-  def find(arg=false, arg2=false)
-    Category.new({:name => "Category", :id => 1})
-  end
-end
-
-class Resource
-  
-  attr_accessor :name, :id
-  
-  def initialize(options={})
-    options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
-  end
-  
-  def find(arg=false, arg2=false)
-    Resource.new({:name => "Resource", :id => 1})
-    nil
-  end
-end
-
-
-class Blog
-  
-  attr_accessor :id, :name
-
-  def initialize(options={})
-    options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
-  end
-  
-  def comments_enabled?
-    false
-  end
-  
-  def self.find(arg=false, arg2=false)
-    blog = self.new({:id => 1, :name => "Blog"})
-    blog
-  end
-  
-  def categories
-    Category.new({:name => "Category"})
-  end
-  
-  def meta_datas
-    MetaData.new({:name => "Meta Data"})
-  end
-  
-  def articles
-    BlogArticle.new({:name => 'Test Article', :url => 'test-article', :body_excerpt => LoremIpsum.generate(1) })
-  end
-  
-end
-
-class BlogArticle
-  attr_accessor :blog_id, :name, :url, :updated_on, :body_excerpt, :created_on, :created_by, :updated_on,
-  :published_on, :body_exceprt_html, :body, :body_html, :published_on
-  
-  def initialize(options={})
-    options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
-  end
-  
-  def has_excerpt?
-    false
-  end
-  
-  def self.find(arg=false, arg2=false)
-    self.new({:name => 'Test Article', :url => 'test-article', :body_excerpt => LoremIpsum.generate(1) })
-  end
-  
-  def find(arg=false, arg2=false)
-    articles = []
-    5.times do 
-      articles << BlogArticle.new({:name => 'Test Article', :url => 'test-article', :body_excerpt => LoremIpsum.generate(1) })
-    end
-    articles
-  end
-  
-  def self.count(arg=false, arg2=false)
-    6
-  end
-  
-  def self.find_by_sql(arg=false)
-    self.new({:name => 'Test Article', :url => 'test-article', :body_excerpt => LoremIpsum.generate(1) })
-  end
-  
-  def has_video?
-    false
-  end
-  
-  def resources
-    Resource.new({:name => "Resource", :id => 1})
-  end
-  
-end
 
 module PagebuilderHelper
   
@@ -405,7 +45,6 @@ module PagebuilderHelper
     code
   end
   
-  
   @@incrementer = 0
   def link_to(txt, options={}, attributes={})
     attrs = attributes.to_a.map { |k,v| "#{k}=\"#{v}\"" }.join(' ')
@@ -413,7 +52,7 @@ module PagebuilderHelper
   end
   
   def link_to_page(p, attributes = {})
-    page = Page.create(p.name)
+    page = Page.new({:name => p.name})
     if page.name == current_page.name
       (attributes[:class] ||= '') << ' current-page'
     elsif current_page.path_with_id[0, page.path_with_id.length] == page.path_with_id
@@ -453,13 +92,6 @@ module PagebuilderHelper
   end
   
   def google_search_box(advanced = false, options = {})
-    if advanced
-      
-      <<-EOF
-      EOF
-      
-    else
-      
       <<-EOF
         <form id="google_search" action="/s/" method="get" name="gs" role="search">
         		<label class="visuallyhidden focusable" for="q">Search</label>
@@ -471,12 +103,10 @@ module PagebuilderHelper
         		</div> <!-- /#gs_links -->
         </form>
       EOF
-      
-    end
   end
   
   def params(options={})
-    "params"
+    {:param => true, :param2 => false}
   end
   
   def current_space
@@ -493,7 +123,6 @@ module PagebuilderHelper
   end
   
   def link_to_default_page(options={})
-    #binding.pry
     link_to_page(default_page, options)
   end
   
@@ -597,31 +226,38 @@ module PagebuilderHelper
   alias :support_toolbar :admin_toolbar
   
   def site_menu
-    # nav_data = MockData.data_for('navigation')
-    # 
-    # if nav_data && nav_data.kind_of?(Array)
-    #   pages = []
-    #   depth = 0
-    #   
-    #   ## Does not handle multi level menus
-    #   nav_data.each do |page|
-    #     unless page.kind_of?(Array)
-    #       pages << Page.new({:name => page, :depth => depth})
-    #     end
-    #   end
-    #   pages
-    # else
-      Page.root.direct_children
-    # end
+    nav_data = MockData.data_for('navigation')
+    
+    if nav_data && nav_data.kind_of?(Array)
+      
+      pages = []
+      
+      nav_data.each do |page|
+        unless page.kind_of?(Array)
+          pages << Page.new({:name => page})
+        end
+      end
+      pages
+    else
+      Page.fake_children
+    end
   end
   
-  def current_page?(p); p.name == current_page; end
-  def current_page;     Page.current_page || site_menu[0]; end
+  def current_page?(p)
+    p.name == current_page
+  end
+  
+  def current_page
+    Page.current_page || site_menu[0]
+  end
 
   def default_page
     site_menu.first
   end
-  def default_page?; current_page.name == default_page.name; end
+  
+  def default_page?
+    current_page.name == default_page.name
+  end
 
   def breadcrumbs
     return [] if default_page?
@@ -631,7 +267,13 @@ module PagebuilderHelper
   def content_for(name=nil,permissions=nil)
     multiplier = name.to_s =~ /content/ ? 5 : 2
     MockData.data_for(name) || "Sample content for #{name.to_s}. " + LoremIpsum.generate(multiplier)
-  end  
+  end
+  
+  def content_tag(*args)
+    <<-SNIPPET_ERROR
+      <div class="error" style="background-color: red; padding: 5px; color: white;">Content Tags will not render in mock builder</div>
+    SNIPPET_ERROR
+  end
   
   def last_modified; current_page.created_on; end
   
@@ -661,16 +303,47 @@ module PagebuilderHelper
   def link_to_blog_with_tag(arg=false, arg2=false)
     link_to(arg)
   end
-  alias_method :link_to_article, :link_to_blog_with_tag
   
-  def get_blog(arg=false)
+  def link_to_article(article, blog)
+    link_to(article.name)
   end
   
-  def blog_tags(arg=false)
+  #alias_method :link_to_article, :link_to_blog_with_tag
+  
+  def get_blog(*args)
+  end
+  
+  def url_to_article(*args)
+  end
+  
+  def form_remote_tag(*args)
+  end
+  
+  def textile_editor(*args)
+  end
+  
+  def textile_editor_initialize(*args)
+  end
+  
+  def submit_tag(*args)
+  end
+  
+  def end_form_tag(*args)
+  end
+  
+  def resource_image(*args)
+    image_tag("http://placekitten.com/300/200")
+  end
+  
+  def resource_view?
+    false
+  end
+  
+  def blog_tags(*args)
     array = MockData.data_for('blog_tags') || Sanitize.clean(LoremIpsum.generate(1)).split(' ')
   end
   
-  def javascript_include_tag(arg, page=false)
+  def javascript_include_tag(*args)
     #printf '<script type="text/javascript" src="%s.js"'
   end
 
@@ -840,11 +513,17 @@ class MockBuilder
     @path     = @request.path.dup
     @params   = @request.query
     
-    s = Space.current_space
-    s.id = 1
-    s.url  = @params['url'] || 'site_name'
-    #s.name = MockData.data_for(:site_name) || @params['name']
+    name = MockData.data_for(:site_name) || @params['name']
+    url = @params['url'] || 'site_name'
+    s = Space.new({:id => 1, :name => name, :url => url })
 
+    # s = Space.current_space
+    # s.id = 1
+    # s.url  = @params['url'] || 'site_name'
+    #s.name = MockData.data_for(:site_name) || @params['name']
+    
+    # binding.pry
+    
     if s.name.nil? || s.name.empty? 
       s.name = s.url.split('_').map { |e| e.capitalize }.join(' ')
     end
@@ -929,9 +608,6 @@ class MockBuilder
     end.join('') #filename == '(erb)' ? "\n" : '')
     
     <<-HTML
-    <!-- <html>
-    <head>
-      <title>Exception Occurred!</title> -->
       <style type="text/css" media="screen">
         .exception h1,.exception h2,.exception h3,.exception h4,.exception h5,.exception h6 { font-family: Lucida Grande; font-weight: normal;  padding: 5px;}        
         .exception h1,.exception h2,.exception h3 { background: #900; color: #fff; padding: 15px;}
@@ -945,9 +621,7 @@ class MockBuilder
         .exception code { display: block; }
       </style>
       #{support_files}
-    <!--</head>
-    <body> 
-    #{support_toolbar} -->
+
     <div class="exception">
      <h1>Error Rendering: #{@path}/#{File.basename(@filename)}</h1>  
      <h2>#{@exception.backtrace.first}</h2>
@@ -960,22 +634,6 @@ class MockBuilder
        #{@exception.backtrace.join('')}
      </blockquote>
     </div>  
-    <!-- </body>
-    </html> -->
     HTML
   end
 end
-
-# if $0 == __FILE__
-#   require 'pp'
-#   def print_branch(branch, depth = 0)
-#     branch.each do |b|
-#       puts '->' * depth + b.name + ' (' + b.path + ')'
-#       print_branch(b.direct_children, depth + 1)
-#     end    
-#   end 
-#   
-#   pp MockData.data_for(:navigation)
-#   #pp Page.root
-#   print_branch(Page.root.direct_children)
-# end
