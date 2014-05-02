@@ -14,7 +14,7 @@ require 'cgi'
 require '../eztime/lib/eztime.rb'
 require 'chronic'
 require 'nokogiri'
-
+require 'sanitize'
 
 class ListMaker
   def initialize(hash)
@@ -150,10 +150,10 @@ class Page
   end
   
   def direct_children(arg=false)
-    children
+    Page.children
   end
   
-  def children
+  def self.children
     #@@singleton ||= self.new
     array = []
     array << @@singleton ||= self.new
@@ -178,12 +178,12 @@ class Page
   def last_modified; @created_on; end
   
   def self.create(name, options=nil)
-    p = Page.new
-    p.name = name
-    p.id = @@page_id 
-    p.created_on = Time.now
-    #p.url =  #name.downcase.gsub(/[^0-9a-z_]/, '_').squeeze('_')
-    p.path = '/0/1/'
+    p = self.new({:name => name, :id => @@page_id, :created_on => Time.now, :path => '/0/1/'})
+    # p.name = name
+    # p.id = @@page_id 
+    # p.created_on = Time.now
+    # #p.url =  #name.downcase.gsub(/[^0-9a-z_]/, '_').squeeze('_')
+    # p.path = '/0/1/'
     @@page_id += 1
     yield p if block_given?
     p
@@ -194,7 +194,11 @@ class Page
   end
   
   def url
-    @url || name.downcase.gsub(/[^0-9a-z_]/, '_').squeeze('_')
+    if name.kind_of?(Page)
+      @url || name.name.downcase.gsub(/[^0-9a-z_]/, '_').squeeze('_')
+    else
+      @url || name.downcase.gsub(/[^0-9a-z_]/, '_').squeeze('_')
+    end
   end
   
   def path_with_id; [path, id].join('/'); end
@@ -233,10 +237,11 @@ class Page
 end
 
 class Space
-  attr_accessor :name, :url, :theme, :domain, :id
+  attr_accessor :name, :url, :theme, :domain, :id, :default_page
   
   def initialize(options={})
     options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
+    @default_page = Page.create("Home")
   end
   
   def self.current_space
@@ -263,9 +268,55 @@ class Space
   
 end
 
+# WVUToday only
+class MetaData
+  
+  attr_accessor :name, :id
+  
+  def initialize(options={})
+    options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
+  end
+  
+  def self.find(arg=false, arg2=false)
+    empty_array = []
+  end
+  
+  def find(arg=false, arg2=false)
+    MetaData.new({:name => "Meta Data", :id => 1})
+  end
+end
+
+class Category
+  
+  attr_accessor :name, :id
+  
+  def initialize(options={})
+    options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
+  end
+  
+  def find(arg=false, arg2=false)
+    Category.new({:name => "Category", :id => 1})
+  end
+end
+
+class Resource
+  
+  attr_accessor :name, :id
+  
+  def initialize(options={})
+    options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
+  end
+  
+  def find(arg=false, arg2=false)
+    Resource.new({:name => "Resource", :id => 1})
+    nil
+  end
+end
 
 
 class Blog
+  
+  attr_accessor :id, :name
 
   def initialize(options={})
     options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
@@ -273,6 +324,23 @@ class Blog
   
   def comments_enabled?
     false
+  end
+  
+  def self.find(arg=false, arg2=false)
+    blog = self.new({:id => 1, :name => "Blog"})
+    blog
+  end
+  
+  def categories
+    Category.new({:name => "Category"})
+  end
+  
+  def meta_datas
+    MetaData.new({:name => "Meta Data"})
+  end
+  
+  def articles
+    BlogArticle.new({:name => 'Test Article', :url => 'test-article', :body_excerpt => LoremIpsum.generate(1) })
   end
   
 end
@@ -287,6 +355,34 @@ class BlogArticle
   
   def has_excerpt?
     false
+  end
+  
+  def self.find(arg=false, arg2=false)
+    self.new({:name => 'Test Article', :url => 'test-article', :body_excerpt => LoremIpsum.generate(1) })
+  end
+  
+  def find(arg=false, arg2=false)
+    articles = []
+    5.times do 
+      articles << BlogArticle.new({:name => 'Test Article', :url => 'test-article', :body_excerpt => LoremIpsum.generate(1) })
+    end
+    articles
+  end
+  
+  def self.count(arg=false, arg2=false)
+    6
+  end
+  
+  def self.find_by_sql(arg=false)
+    self.new({:name => 'Test Article', :url => 'test-article', :body_excerpt => LoremIpsum.generate(1) })
+  end
+  
+  def has_video?
+    false
+  end
+  
+  def resources
+    Resource.new({:name => "Resource", :id => 1})
   end
   
 end
@@ -329,13 +425,20 @@ module PagebuilderHelper
   def editor_mode?
   end
 
-  def mobile 
+  def mobile
+    false
   end
   
   def is_mobile_version?
   end
   
+  def admin_interface?
+  end
+  
   def mobile_ga
+  end
+  
+  def h(arg=false)
   end
   
   def google_analytics
@@ -372,6 +475,10 @@ module PagebuilderHelper
     end
   end
   
+  def params(options={})
+    "params"
+  end
+  
   def current_space
     Space.new({:name => site_name, :id => 1})
   end
@@ -385,7 +492,10 @@ module PagebuilderHelper
     end
   end
   
-  def link_to_default_page(options={}); link_to_page(default_page, options); end
+  def link_to_default_page(options={})
+    #binding.pry
+    link_to_page(default_page, options)
+  end
   
   def support_files
     '<link rel="stylesheet" type="text/css" href="/SERVER/mock.css" />'
@@ -487,28 +597,30 @@ module PagebuilderHelper
   alias :support_toolbar :admin_toolbar
   
   def site_menu
-    nav_data = MockData.data_for('navigation')
-
-    if nav_data && nav_data.kind_of?(Array)
-      pages = []
-      depth = 0
-      
-      ## Does not handle multi level menus
-      nav_data.each do |page|
-        unless page.kind_of?(Array)
-          pages << Page.new({:name => page, :depth => depth})
-        end
-      end
-      pages
-    else
+    # nav_data = MockData.data_for('navigation')
+    # 
+    # if nav_data && nav_data.kind_of?(Array)
+    #   pages = []
+    #   depth = 0
+    #   
+    #   ## Does not handle multi level menus
+    #   nav_data.each do |page|
+    #     unless page.kind_of?(Array)
+    #       pages << Page.new({:name => page, :depth => depth})
+    #     end
+    #   end
+    #   pages
+    # else
       Page.root.direct_children
-    end
+    # end
   end
   
   def current_page?(p); p.name == current_page; end
   def current_page;     Page.current_page || site_menu[0]; end
 
-  def default_page; site_menu.first; end
+  def default_page
+    site_menu.first
+  end
   def default_page?; current_page.name == default_page.name; end
 
   def breadcrumbs
@@ -544,6 +656,18 @@ module PagebuilderHelper
     <<-SNIPPET_ERROR
       <div class="error" style="background-color: red; padding: 5px; color: white;">Template rendered snippets will not display in mock builder</div>
     SNIPPET_ERROR
+  end
+  
+  def link_to_blog_with_tag(arg=false, arg2=false)
+    link_to(arg)
+  end
+  alias_method :link_to_article, :link_to_blog_with_tag
+  
+  def get_blog(arg=false)
+  end
+  
+  def blog_tags(arg=false)
+    array = MockData.data_for('blog_tags') || Sanitize.clean(LoremIpsum.generate(1)).split(' ')
   end
   
   def javascript_include_tag(arg, page=false)

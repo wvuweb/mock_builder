@@ -13,6 +13,8 @@ GEM
       method_source (~> 0.8)
       slop (~> 3.4)
     radius (0.7.4)
+    sanitize (2.1.0)
+      nokogiri (>= 1.4.4)
     slop (3.5.0)
 
 PLATFORMS
@@ -24,3 +26,4 @@ DEPENDENCIES
   nokogiri
   pry
   radius
+  sanitize
