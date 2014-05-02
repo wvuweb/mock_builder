@@ -12,7 +12,7 @@ class MetaData
   def self.find(arg=false, arg2=false)
     if arg === :all
       metas = []
-      5.times do |i|
+      4.times do |i|
         metas << MetaData.new({:name => "Meta Data "+i.to_s, :id => i})
       end
       metas

@@ -65,4 +65,9 @@ class Page
     end
   end
   
+  def direct_children(*args)
+    if @direct_children == []
+      Page.fake_children
+    end
+  end
 end
