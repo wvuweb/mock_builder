@@ -375,21 +375,8 @@ module BlogsHelper
   end
   
   def blog_engine
-    articles = []
-    # articles << BlogArticle.new(
-    #   :body_html => LoremIpsum.generate(2),
-    #   :created_by => 'Chris',
-    #   :published_on => Time.local(2007, 1, 12, 15, 42, 00),
-    #   :name => 'Version 0.3.1 released'
-    # )
-    # 
-    # articles << BlogArticle.new(
-    #   :body_html => LoremIpsum.generate(1),
-    #   :created_by => OpenStruct.new(:first_name => 'Dave'),
-    #   :published_on => Time.local(2007, 2, 5, 11, 32, 00),
-    #   :name => '15 sites & 26,000+ page views'
-    # )
     
+    articles = []
     yml = MockData.data_for 'blog_articles'
     
     if yml.kind_of?(Array)
@@ -433,23 +420,40 @@ module BlogsHelper
   end
   
   def blog_theme(filename)
-    file = File.join(File.dirname(@filename), '_' + filename.to_s + '.rhtml')
-    file = 'shared/blog/' + filename.to_s + '.rhtml' unless File.exist?(file)
-    file
+    basename = Pathname.new(@filename).basename
+    foldername = File.basename(basename,".rhtml")
+    blog_path = File.join(File.dirname(@filename), foldername)
+
+    file_path = File.join(blog_path, '_' + filename.to_s + '.rhtml')
+    
+    unless File.exist?(file_path)
+      file_path = 'shared/blog/' + filename.to_s + '.rhtml' 
+    end
+    
+    file_path
   end
   
   def blog_engine_title(glue='')
   end
   
   def blog_article_date(fmt=nil)
-    @@blog_article.published_on
+    if fmt
+      @@blog_article.published_on.eztime(fmt)
+    else
+      @@blog_article.published_on
+    end
   end
   
   def blog_article_full_view?
+    @blog_article = BlogArticle.new
     false
   end
   
   def blog_article_excerpt
+    @@blog_article.body_html
+  end
+  
+  def blog_article_content
     @@blog_article.body_html
   end
   
