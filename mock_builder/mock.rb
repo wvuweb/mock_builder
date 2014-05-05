@@ -15,16 +15,8 @@ require 'chronic'
 require 'nokogiri'
 require 'sanitize'
 
-require 'lib/list_maker.rb'
-require 'lib/mock_data.rb'
-require 'lib/lorem_ipsum.rb'
-
-require 'models/blog_article.rb'
-require 'models/blog.rb'
-require 'models/page.rb'
-require 'models/space.rb'
-require 'models/user.rb'
-require 'models/wvutoday.rb'
+Dir["lib/*.rb"].each {|file| require file }
+Dir["models/*.rb"].each {|file| require file }
 
 
 module PagebuilderHelper
