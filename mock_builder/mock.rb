@@ -137,17 +137,26 @@ module PagebuilderHelper
   def partial(filename,locals={})
     parts = filename.to_s.split('/')
     fname = parts.last
-    fname = '_' + fname unless fname =~ /^_/
-    fname = fname + '.rhtml' unless fname =~ /\.rhtml$/
-    parts[-1] = fname
     
-    parts.unshift File.dirname(@filename)
-    if filename =~ /^shared\//
-      parts[0] = File.dirname(parts[0]) 
+    unless fname =~ /^_/
+      fname = '_' + fname 
     end
     
-    if parts[1] == "shared"
+    unless fname =~ /\.rhtml$/
+      fname = fname + '.rhtml'
+    end
+    
+    shared_theme = false
+    if filename =~ /^shared\//
+      # parts[0] = File.dirname(parts[0])
+      shared_theme = true
+    end
+    
+    parts[-1] = fname
 
+    parts.unshift File.dirname(@filename) if parts.length == 1 || shared_theme
+
+    if shared_theme
       subparts = parts[0].split('/')
       slate_themes_pos = subparts.index('slate_themes')
       total_pos = subparts.length - 1 # subtract from total because first position is a "/"
