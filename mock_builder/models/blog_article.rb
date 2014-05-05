@@ -42,4 +42,12 @@ class BlogArticle
     MetaData.find(:all)
   end
   
+  def attachments
+    Resource.new()
+  end
+  
+  def categories
+    MetaData.new
+  end
+  
 end
