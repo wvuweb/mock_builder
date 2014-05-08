@@ -6,6 +6,8 @@ class BlogArticle
     @id = 1
     @name = "Mock Article"
     @summary = "Everyone loves kittens!"
+    @published_on = Time.now
+    @created_on = Time.now
     @body_excerpt = LoremIpsum.generate(1)
     options.each { |k,v| instance_variable_set('@' + k.to_s, v) }
   end

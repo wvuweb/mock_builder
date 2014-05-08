@@ -384,12 +384,12 @@ module BlogsHelper
 
       data.each do |article|
         
-        article.body_html.to_s != "false" ? body = article.body_html : body = LoremIpsum.generate(article.paragraph_count)
+        article.article.body_html.to_s != "false" ? body = article.article.body_html : body = LoremIpsum.generate(article.article.paragraph_count)
         articles << BlogArticle.new(
           :body_html => body,
-          :created_by => article.author,
-          :published_on => Chronic.parse(article.published_on.to_s),
-          :name => article.title
+          :created_by => article.article.author,
+          :published_on => Chronic.parse(article.article.published_on.to_s),
+          :name => article.article.title
         )
       end
     elsif yml.kind_of?(String)
