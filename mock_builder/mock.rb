@@ -153,8 +153,10 @@ module PagebuilderHelper
     end
     
     parts[-1] = fname
+    
+    # binding.pry
 
-    parts.unshift File.dirname(@filename) if parts.length == 1 || shared_theme
+    parts.unshift File.dirname(@filename) if parts || shared_theme
 
     if shared_theme
       subparts = parts[0].split('/')
@@ -166,10 +168,9 @@ module PagebuilderHelper
       parts = parts.drop(1)
       shared_path = parts.join('/')
       full_path = subparts.concat('/'+shared_path)
-      fname = full_path
-      
+      fname = full_path      
     else
-      fname = parts.join('/')
+      fname = '/'+parts.join('/')
     end
     
     if File.exists?(fname)
@@ -263,7 +264,11 @@ module PagebuilderHelper
   def breadcrumbs
     return [] if default_page?
     crumbs = [current_page]
-  end  
+  end
+  
+  def show_between(*args, &block)
+    false
+  end
   
   def content_for(name=nil,permissions=nil)
     multiplier = name.to_s =~ /content/ ? 5 : 2
