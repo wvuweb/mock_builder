@@ -1,8 +1,8 @@
 # Mock Builder v2.0
 
-Mock builder v2.0 is a theme development tool for the [Slate](http://slatecms.wvu.edu/ "Slate") CMS template rendering engine.  Mock Builder was created to help you iterate quickly on themes and template markup.  
+Mock Builder v2.0 is a theme development tool for the [Slate](http://slatecms.wvu.edu/ "Slate") CMS template rendering engine.  Mock Builder was created to help you iterate quickly on themes and template markup.  
 
-Hammer is **NOT** for content creation.  
+Mock Builder v2.0 is **NOT** for content creation.  
 
 Mock Builder v2.0 fixes many problems that were issues in the first version of mock builder.  The new version also builds on the little known feature such as mock_data.yml.
 
