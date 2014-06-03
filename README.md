@@ -1,8 +1,10 @@
 # Mock Builder v2.0
 
-Mock builder is a test client tool for the Slate CMS template rendering engine.  Mock builder was created to help you iterate quickly on themes and template markup.  Mock builder is not for content creation.
+Mock builder v2.0 is a theme development tool for the [Slate](http://slatecms.wvu.edu/ "Slate") CMS template rendering engine.  Mock Builder was created to help you iterate quickly on themes and template markup.  
 
-Mock Builder v2.0 fixes many problems that were issues in the first version, and also activates little known features such as mock_data.yml.
+Hammer is **NOT** for content creation.  
+
+Mock Builder v2.0 fixes many problems that were issues in the first version of mock builder.  The new version also builds on the little known feature such as mock_data.yml.
 
 
 ###Dependencies
@@ -40,6 +42,9 @@ Mock Builder v2.0 fixes many problems that were issues in the first version, and
 
     `alias mock2='rvm use ruby-1.9.3-p484@mock_builder && cd ~/Sites/mock_builder_v2/mock_builder && ruby mock_server.rb ~/Sites/slate_themes'`
     
+
+### Windows Installation 
+***Coming Soon***
     
 ##mock_data.yml 
 
