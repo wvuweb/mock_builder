@@ -23,16 +23,18 @@ Mock Builder v2.0 fixes many problems that were issues in the first version of m
     `rvm requirements`
 
 2. Checkout repo into your ~/Sites/ directory:
+    
+    * `git clone https://github.com/wvuweb/mock_builder.git`
+    * *** If you have the old version of mock builder installed delete the directory first. *** 
 
-    `git clone https://github.com/wvuweb/mock_builder.git`
 
 3. Change directory to mock builder install 
 
-    `cd ~/Sites/mock_builder_v2/`
+    `cd ~/Sites/mock_builder/`
 
 4. If RVM prompts you to run the following: 
 
-    `rvm install 1.9.3-p484`
+    `rvm install 1.9.3-p484@mock_builder`
 
 5. Then run 
 
@@ -40,7 +42,8 @@ Mock Builder v2.0 fixes many problems that were issues in the first version of m
 
 5. Create a alias in your profile (.bash_profile or .profile)
 
-    `alias mock2='rvm use ruby-1.9.3-p484@mock_builder && cd ~/Sites/mock_builder_v2/mock_builder && ruby mock_server.rb ~/Sites/slate_themes'`
+    * `alias mock='rvm use ruby-1.9.3-p484@mock_builder && cd ~/Sites/mock_builder/mock_builder && ruby mock_server.rb ~/Sites/slate_themes'`
+    * *** If you have the old version of mock builder installed remove the old alias first. *** 
     
 
 ### Windows Installation 
