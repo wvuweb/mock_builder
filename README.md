@@ -24,7 +24,7 @@ Mock Builder v2.0 fixes many problems that were issues in the first version of m
 
 2. Checkout repo into your ~/Sites/ directory:
 
-    `git clone git@github.com:wvuweb/mock_builder.git mock_builder_v2`
+    `git clone https://github.com/wvuweb/mock_builder.git`
 
 3. Change directory to mock builder install 
 
