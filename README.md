@@ -18,53 +18,33 @@ Mock Builder fixes many problems that were issues in the first version of mock b
     *  `cd ~/Sites/ && mkdir slate_themes`
         * To use Mock Builder v2, **all the themes you want to test locally must reside in the `slate_themes` folder**.
         * If you have miscellaneous themes in your `~/Sites/` directory, it would be best to re-`svn checkout` those themes into the `slate_themes` folder.
-
 1. Install [Bundler](http://bundler.io/) if you don't already have it:
-
     * `gem install bundler`
         * If you get a "Permission denied" error of some sort, run `sudo gem install bundler`
-
 1. Install RVM: [Ruby Version Manager](http://rvm.io/ "Ruby Version Manager")
-
-    `\curl -sSL https://get.rvm.io | bash -s stable`
-    
-    then run
-    
-    `rvm requirements`
-    
-    * Occasionally, RVM will ask you to run a few other commands (like `source` or the like). When installing, if it asks you to run other commands, please do so!
-    * Installing RVM could take a while (30 minutes to 1.5 hours depending). Please be patient.
+    * `\curl -sSL https://get.rvm.io | bash -s stable`
+    * then run
+    * `rvm requirements`
+        * Installing RVM could take a while (30 minutes to 1.5 hours depending). Please be patient.
+        * Occasionally, RVM will ask you to run a few other commands (like `source` or the like). After installing, if it asks you to run other commands, please do so!
 
 1. Clone the Mock Builder repo into your `~/Sites/` directory:
-    
     * `git clone https://github.com/wvuweb/mock_builder.git`
         * ***If you have the old version of mock builder installed delete the old directory first.***
         * If you get `-bash: git: command not found` when you run `git clone`, go [install Git](http://git-scm.com/), then re-run the above command after quitting and reopening terminal.
-
-
 1. Change directory to the mock builder install 
-
-    `cd ~/Sites/mock_builder/`
-
+    * `cd ~/Sites/mock_builder/`
 1. If RVM prompts you, run the following: 
-
-    `rvm install 1.9.3-p484@mock_builder`
-
+    * `rvm install 1.9.3-p484@mock_builder`
 1. Then run 
-
-    `bundle install`
-
-1. Create an alias in your profile:
-    
+    * `bundle install`
+1. Create an alias in your profile:    
     * Run `cd ~ && open .bash_profile` or `cd ~ && open .profile` via the Terminal (depending on which one you use). 
         * If you don't know which file you use, paste the alias below into both files.
     * Paste `alias mock='rvm use ruby-1.9.3-p484@mock_builder && cd ~/Sites/mock_builder/mock_builder && ruby mock_server.rb ~/Sites/slate_themes'` into your profile.
     * ***If you have the old version of mock builder installed remove the old alias first.***
-
-1. Completely quit Terminal. Then reopen it and type `mock`
-
+1. Completely quit Terminal. Then reopen Terminal and type `mock`.
 1. Visit `http://localhost:2000` in your browser. Navigate to a theme to test it locally.
-
 1. Congrats, you're up and running! You'll probably want a `mock_data.yml` file. Keep reading to see how to get that set up.
     
 
@@ -157,7 +137,7 @@ To use this feature, create a file with the name: `mock_data.yml` in the root of
 
 ### Advance Example (blogs):
 
-**mock_data.yml
+**mock_data.yml**
 
 ```yaml
     blog_articles:
@@ -208,6 +188,6 @@ No longer will you get an error message associated with a `<%= blog_engine %>` t
 
 *body_html* key can have 2 switch states.  If the switch is marked `false`, then the body html for the article will use Lorem Ipsum prefill and the paragraph count.  If the switch state is a pipe character (|) then it will expect provided custom HTML to follow.
 
-*created_on* key is for the date in which the article was created.  This field can take human language and translate it to a date object.  If you type *2 days ago* Mock Builder is smart enough to create a date based on todays date.  You could also type `02/12/2014 at noon` and it will correctly create a date.
+*created_on* key is for the date in which the article was created.  This field can take human language and translate it to a date object.  If you type `2 days ago` Mock Builder is smart enough to create a date based on todays date.  You could also type `02/12/2014 at noon` and it will correctly create a date.
 
 *published_on* key is the same as `created_on`, however for the `published_on` field.  Currently mock builder is not smart enough to order the articles by their `published_on` date.
