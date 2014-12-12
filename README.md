@@ -18,6 +18,10 @@ Mock Builder fixes many problems that were issues in the first version of mock b
     *  `cd ~/Sites/ && mkdir slate_themes`
         * To use Mock Builder v2, **all the themes you want to test locally must reside in the `slate_themes` folder**.
         * If you have miscellaneous themes in your `~/Sites/` directory, it would be best to re-`svn checkout` those themes into the `slate_themes` folder.
+1. Make sure you have Xcode and Command Line Tools Installed
+    * [Download Xcode from the OSX App Store](https://developer.apple.com/xcode/downloads/)
+    * If Xcode is already installed, be sure to open the app and agree to it's Terms & Conditions (this is required or you'll get an error in Terminal)
+    * Go to Xcode > Preferences > Downloads and install "Command Line Tools". If you don't see it in the list, it should already be installed.
 1. Install [Bundler](http://bundler.io/) if you don't already have it:
     * `gem install bundler`
         * If you get a "Permission denied" error of some sort, run `sudo gem install bundler`
