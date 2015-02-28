@@ -4,6 +4,9 @@ require "bundler/setup"
 require 'pry'
 require 'htmlentities'
 
+require 'optparse'
+require 'ostruct'
+
 $LOAD_PATH << '.'
 
 require 'webrick'
@@ -39,32 +42,47 @@ class WEBrick::HTTPServlet::ERBHandler
     begin
       if Object.const_defined?('MockBuilder')
         klasses = %w{
-          MockData 
-          LoremIpsum 
-          Page 
-          Space 
-          BlogArticle 
-          PagebuilderHelper 
-          BlogsHelper 
+          MockData
+          LoremIpsum
+          Page
+          Space
+          BlogArticle
+          PagebuilderHelper
+          BlogsHelper
           MockBuilder
         }
         Class.remove_class(*klasses)
         load 'mock.rb'
         puts 'Reloaded ' + klasses.length.to_s + ' classes'
       end
-      
+
       res.body = MockBuilder.new({:filename => @script_filename, :request => req}).render
-      res['content-type'] = 'text/html' 
+      res['content-type'] = 'text/html'
     rescue StandardError => ex
       raise
     rescue Exception => ex
       @logger.error(ex)
       raise HTTPStatus::InternalServerError, ex.message
     end
-  end  
+  end
 end
 
-doc_root = ARGV.shift || Dir::pwd
+options = OpenStruct.new
+options.directory = (Pathname.new(Dir.pwd).parent.parent + "slate_themes").to_s
+options.daemon = 0
+
+OptionParser.new do |o|
+  o.on('-d', '--directory directory', String, 'Directory to start hammer in') do |d|
+    options.directory = d
+  end
+
+  o.on('-da', '--daemon daemon', Integer, 'If the server should run Daemonized') do |da|
+    options.daemon = da == 1 ?  WEBrick::Daemon : WEBrick::SimpleServer
+  end
+  o.parse!(ARGV)
+end
+
+doc_root = options.directory
 
 puts 'slate - mock server for theme testing'
 puts '-' * 60
@@ -74,13 +92,14 @@ puts '-' * 60
 s = HTTPServer.new(
   :Port            => 2000,
   :DocumentRoot    => doc_root,
+  :ServerType      => options.daemon,
   :DirectoryIndex  => []
 )
 
 s.mount("/",       HTTPServlet::FileHandler, doc_root, true)
 s.mount("/themes", HTTPServlet::FileHandler, doc_root, true)
 s.mount("/SERVER", HTTPServlet::FileHandler, Dir::pwd, true)
-        
+
 trap("INT"){ s.shutdown }
 
 s.start
