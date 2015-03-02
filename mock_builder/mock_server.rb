@@ -69,7 +69,7 @@ end
 
 options = OpenStruct.new
 options.directory = (Pathname.new(Dir.pwd).parent.parent + "slate_themes").to_s
-options.daemon = 0
+options.daemon = WEBrick::SimpleServer
 
 OptionParser.new do |o|
   o.on('-d', '--directory directory', String, 'Directory to start hammer in') do |d|
