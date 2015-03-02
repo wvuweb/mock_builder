@@ -14,6 +14,10 @@ Mock Builder fixes many problems that were issues in the first version of mock b
 
 ###Mac OSX Installation
 
+The installation instructions below have been **DEPRECIATED**
+
+Please install [Mock Builder VM](https://github.com/wvuweb/mock-builder-vm)
+
 1. If you don't already have one, go to `~/Sites/` and make a folder called `slate_themes`. You can do this via OSX Finder or via the following command in Terminal:
     *  `cd ~/Sites/ && mkdir slate_themes`
         * To use Mock Builder v2, **all the themes you want to test locally must reside in the `slate_themes` folder**.
