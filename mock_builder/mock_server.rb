@@ -7,6 +7,9 @@ require 'htmlentities'
 require 'optparse'
 require 'ostruct'
 
+require 'colorize'
+require 'git'
+
 $LOAD_PATH << '.'
 
 require 'webrick'
@@ -82,9 +85,35 @@ OptionParser.new do |o|
   o.parse!(ARGV)
 end
 
+
+g = Git.open("../")
+ref = g.log.first {|l| l.sha }
+remote = g.lib.send(:command, 'ls-remote').split(/\n/)[1].split(/\t/)[0]
+
+if ref.to_s == remote.to_s
+  puts " "
+  puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!".colorize(:red)
+  puts "!!!".colorize(:red)+" WARNING YOU ARE BEHIND ON MOCK BUILDER VERSIONS".colorize(:light_cyan)+" !!!".colorize(:red)
+  puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!".colorize(:red)
+  puts " "
+  puts "Repository is currently at ref: ".colorize(:light_white)+(ref.to_s+" ").colorize(:light_magenta)
+  puts "Remote is currently at ref: ".colorize(:light_white)+(remote.to_s+" ").colorize(:light_magenta)
+  # puts "Learn how to update Hammer at: ".colorize(:light_white)+update_url.colorize(:light_cyan)
+  puts " "
+  puts " "
+  puts "Update Mock Builder by using using the following command: ".colorize(:light_white)
+  puts " "
+  puts "vagrant mock-builder update".colorize(:light_green)
+  puts " "
+  puts "Mock Builder will automatically restart after updating itself".colorize(:light_white)
+  puts " "
+  puts " "
+end
+
+
 doc_root = options.directory
 
-puts 'slate - mock server for theme testing'
+puts "mock server for slate theme testing".colorize(:light_green)
 puts '-' * 60
 puts 'Starting in ' + doc_root + '...'
 puts '-' * 60
