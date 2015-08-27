@@ -75,12 +75,18 @@ options.directory = (Pathname.new(Dir.pwd).parent.parent + "slate_themes").to_s
 options.daemon = WEBrick::SimpleServer
 
 OptionParser.new do |o|
+
   o.on('-d', '--directory directory', String, 'Directory to start hammer in') do |d|
     options.directory = d
   end
 
   o.on('-da', '--daemon daemon', Integer, 'If the server should run Daemonized') do |da|
     options.daemon = da == 1 ?  WEBrick::Daemon : WEBrick::SimpleServer
+    if da == 1
+      puts "INFO: ".colorize(:blue)+"Mock Server starting in Daemon mode".colorize(:light_cyan)
+    else
+      puts "INFO: ".colorize(:blue)+"Mock Server starting in Simple Server mode".colorize(:light_cyan)
+    end
   end
   o.parse!(ARGV)
 end
@@ -113,7 +119,7 @@ end
 
 doc_root = options.directory
 
-puts "mock server for slate theme testing".colorize(:light_green)
+puts "Mock Builder Server - for slate theme testing is loading...".colorize(:light_green)
 puts '-' * 60
 puts 'Starting in ' + doc_root + '...'
 puts '-' * 60
